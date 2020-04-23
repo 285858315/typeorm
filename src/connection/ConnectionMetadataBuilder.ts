@@ -63,12 +63,15 @@ export class ConnectionMetadataBuilder {
                 allEntityClasses.slice(allEntityClasses.indexOf(entityClass), 1);
             }
         });
-        const decoratorEntityMetadatas = new EntityMetadataBuilder(this.connection, getMetadataArgsStorage()).build(allEntityClasses);
+//         const decoratorEntityMetadatas = new EntityMetadataBuilder(this.connection, getMetadataArgsStorage()).build(allEntityClasses);
 
         const metadataArgsStorageFromSchema = new EntitySchemaTransformer().transform(entitySchemas);
-        const schemaEntityMetadatas = new EntityMetadataBuilder(this.connection, metadataArgsStorageFromSchema).build();
-
-        return [...decoratorEntityMetadatas, ...schemaEntityMetadatas];
+        Object.keys(metadataArgsStorageFromSchema).forEach(key => {
+            if(Array.isArray(metadataArgsStorageFromSchema[key])){
+                metadataArgsStorageFromSchema[key] = metadataArgsStorageFromSchema[key].concat(getMetadataArgsStorage()[key])
+            }
+        })
+        return new EntityMetadataBuilder(this.connection, metadataArgsStorageFromSchema).build();
     }
 
 }
